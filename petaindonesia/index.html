@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>VR Peta Indonesia Interaktif</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+</head>
+
+<body>
+  <a-scene>
+
+    <!-- Assets -->
+    <a-assets>
+      <img id="peta" crossorigin="anonymous"
+           src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Map_of_Indonesia_Demis.png">
+    </a-assets>
+
+    <!-- PETA -->
+    <a-plane src="#peta" position="0 1.6 -4" width="6" height="3"></a-plane>
+
+    <!-- ===== TITIK ===== -->
+
+    <a-sphere position="-1.8 1.6 -3.9" radius="0.12" color="green" class="clickable" id="sumatera"></a-sphere>
+    <a-sphere position="-1.2 0.8 -3.9" radius="0.12" color="red" class="clickable" id="jakarta"></a-sphere>
+    <a-sphere position="-0.5 1.6 -3.9" radius="0.12" color="yellow" class="clickable" id="kalimantan"></a-sphere>
+    <a-sphere position="0 0.6 -3.9" radius="0.12" color="blue" class="clickable" id="bali"></a-sphere>
+    <a-sphere position="2.5 1.2 -3.9" radius="0.12" color="purple" class="clickable" id="papua"></a-sphere>
+    <a-sphere position="0.45 1.4 -3.9" radius="0.12" color="white" class="clickable" id="sulawesi"></a-sphere>
+
+    <!-- ===== LABEL HOVER ===== -->
+    <a-text id="label" value="" position="0 2.3 -3" align="center" width="4" color="black" visible="false"></a-text>
+
+    <!-- ===== POPUP ===== -->
+    <a-entity id="popup" visible="false" position="0 1.5 -2">
+      <a-plane width="2.5" height="1.2" color="#222" opacity="0.9"></a-plane>
+      <a-text id="popupText" value="" align="center" color="white" width="2" position="0 0 0.1"></a-text>
+      <a-text value="Tutup" color="red" position="0 -0.4 0.1" class="clickable" id="closePopup"></a-text>
+    </a-entity>
+
+    <!-- Kamera -->
+    <a-entity id="cameraRig">
+      <a-entity camera look-controls position="0 1.6 0">
+        <a-cursor 
+          raycaster="objects: .clickable"
+          fuse="true"
+          fuse-timeout="700">
+        </a-cursor>
+      </a-entity>
+    </a-entity>
+
+    <!-- SCRIPT -->
+    <script>
+      const label = document.querySelector('#label');
+      const popup = document.querySelector('#popup');
+      const text = document.querySelector('#popupText');
+      const camera = document.querySelector('#cameraRig');
+
+      function hover(el, name) {
+        el.addEventListener('mouseenter', () => {
+          label.setAttribute('value', name);
+          label.setAttribute('visible', true);
+          el.setAttribute('scale', '1.5 1.5 1.5');
+        });
+
+        el.addEventListener('mouseleave', () => {
+          label.setAttribute('visible', false);
+          el.setAttribute('scale', '1 1 1');
+        });
+      }
+
+      function click(el, info, zoom) {
+        el.addEventListener('click', () => {
+          text.setAttribute('value', info);
+          popup.setAttribute('visible', true);
+
+          camera.setAttribute('animation', {
+            property: 'position',
+            to: zoom,
+            dur: 1000,
+            easing: 'easeInOutQuad'
+          });
+        });
+      }
+
+      // SETUP
+        hover(document.querySelector('#sumatera'), "Sumatera");
+        hover(document.querySelector('#jakarta'), "Jakarta");
+        hover(document.querySelector('#kalimantan'), "Kalimantan");
+        hover(document.querySelector('#bali'), "Bali");
+        hover(document.querySelector('#papua'), "Papua");
+        hover(document.querySelector('#sulawesi'), "Sulawesi");
+
+      // CLOSE POPUP
+      document.querySelector('#closePopup').addEventListener('click', () => {
+        popup.setAttribute('visible', false);
+
+        camera.setAttribute('animation', {
+          property: 'position',
+          to: '0 0 0',
+          dur: 800
+        });
+      });
+
+    </script>
+
+  </a-scene>
+</body>
+</html>
